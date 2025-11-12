@@ -11,7 +11,6 @@
 | WebSocket 即時訂單狀態 | 讓前台能即時顯示「準備中 / 完成待取餐」。 | [Spring Boot WebSocket Chat Example](https://spring.io/guides/gs/messaging-stomp-websocket/) |
 
 ---
-
 ## 🧩 二、資料庫設計參考
 
 | 資料表 | 建議欄位 | 說明 |
