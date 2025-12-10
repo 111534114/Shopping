@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>小雞菜單</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #FFF9E6; color: #5C3A21; }
+        h1 { text-align: center; color: #E87A00; }
+        .menu-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; }
+        .menu-item { border: 2px solid #FFDAB9; /* PeachPuff */ border-radius: 10px; padding: 15px; width: 250px; background-color: #FFFFFF; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .menu-item img { max-width: 100%; border-radius: 5px; }
+        .item-name { font-size: 1.4em; color: #D9534F; margin-top: 10px; }
+        .item-desc { font-size: 0.9em; color: #777; }
+        .item-price { font-size: 1.2em; font-weight: bold; color: #5CB85C; text-align: right; }
+        .home-link { display: block; text-align: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🐔 小雞菜單 (Our Menu) 🐣</h1>
+    <div class="menu-container">
+        <div th:each="item : ${menuItems}" class="menu-item">
+            <img th:src="${item.imageUrl}" alt="Drink Image" />
+            <h2 class="item-name" th:text="${item.name}">飲品名稱</h2>
+            <p class="item-desc" th:text="${item.description}">飲品描述</p>
+            <p class="item-price" th:text="'NT$ ' + ${#numbers.formatDecimal(item.price, 1, 'COMMA', 2, 'POINT')}">價格</p>
+        </div>
+    </div>
+    <a href="/" class="home-link">回到首頁</a>
+</body>
+</html>

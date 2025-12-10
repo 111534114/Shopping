@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>孵化訂單</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #E6F7FF; color: #003366; }
+        h1 { text-align: center; color: #005A9E; }
+        table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid #B3D9FF; padding: 8px; text-align: left; }
+        th { background-color: #D4EFFF; }
+        .home-link { display: block; text-align: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🥚 孵化中的訂單 (Current Orders) 🥚</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>訂單ID</th>
+                <th>顧客ID</th>
+                <th>總價</th>
+                <th>狀態</th>
+                <th>備註</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.orderId}"></td>
+                <td th:text="${order.customer.userId}"></td>
+                <td th:text="${#numbers.formatDecimal(order.totalPrice, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td th:text="${order.status}"></td>
+                <td th:text="${order.notes}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="/" class="home-link">回到首頁</a>
+</body>
+</html>
