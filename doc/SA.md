@@ -21,4 +21,16 @@ sequenceDiagram
     資料庫-->>後端: 確認訂單已儲存
     後端-->>前端: 回傳訂單成功訊息
     前端-->>顧客: 顯示訂單完成頁面
+   ## 1. 系統分層概觀
+本系統採用標準 MVC 架構，分為：
+*   **Presentation Layer (前台)**：使用 Thymeleaf 渲染 HTML。
+*   **Business Layer (後台)**：使用 Spring Boot Service 處理業務邏輯。
+*   **Data Layer (資料庫)**：使用 Spring Data JPA 存取 MySQL。
+
+## 5. 技術選用
+*   語言：Java 17
+*   框架：Spring Boot 3.x
+*   前端：Thymeleaf + Bootstrap (RWD)
+*   資料庫：H2 (開發用) / MySQL (正式用)
+*   建置工具：Gradle
 ```
