@@ -143,7 +143,6 @@ erDiagram
         int product_id FK
         int quantity
         string customization "JSON: {sugar: half, ice: none}"
-        decimal subtotal
     }
 ```
 
@@ -172,8 +171,8 @@ erDiagram
         ```json
         {
           "items": [
-            {"productId": 1, "quantity": 1, "customization": "微糖,少冰"},
-            {"productId": 2, "quantity": 2, "customization": "無糖,去冰"}
+            {"productId": 1, "quantity": 1, "customization": {"sugar": "微糖", "ice": "少冰"}},
+            {"productId": 2, "quantity": 2, "customization": {"sugar": "無糖", "ice": "去冰"}}
           ],
           "paymentMethod": "LINE_PAY"
         }
@@ -225,7 +224,7 @@ sequenceDiagram
 1.  **[使用者]** 在菜單頁面選擇「珍珠奶茶」，設定「微糖、去冰」，加入購物車。
 2.  **[前端]** 將商品與參數暫存於前端 State，計算預估金額。
 3.  **[使用者]** 在購物車頁面確認內容，選擇付款方式後送出。
-4.  **[前端]** 發送 API 請求 `POST /api/orders`，包含商品 ID List 與客製化字串。
+4.  **[前端]** 發送 API 請求 `POST /api/orders`，包含商品 ID List 與客製化物件。
 5.  **[後端]** Controller 接收請求，驗證資料格式 (Validation)。
 6.  **[後端]** Service 依據 `product_id` 從 DB 撈取最新價格，重新計算總金額 (防止篡改)。
 7.  **[資料庫]** 在 `orders` 表建立主訂單，狀態設為 `CREATED`。
