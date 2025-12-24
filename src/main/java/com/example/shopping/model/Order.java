@@ -24,9 +24,8 @@ public class Order {
     @Column(name = "order_date")
     private Timestamp orderDate;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status = Status.pending;
+    private String status = "pending";
 
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
@@ -40,10 +39,3 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems;
 
-    public enum Status {
-        pending,
-        preparing,
-        completed,
-        cancelled
-    }
-}
