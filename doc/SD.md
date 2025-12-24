@@ -19,7 +19,7 @@ sequenceDiagram
 
     顧客->>前台系統: 前往結帳
     前台系統->>後台系統: 建立訂單
-    後台系統-->>前台系統: 確認訂單建立
+    後台系統-->>前台系統: 確認訂單建立 
 
     前台系統->>顧客: 顯示結帳頁面 (信用卡/LINE Pay)
     顧客->>前台系統: 完成線上支付
@@ -75,10 +75,10 @@ graph TD
         Browser[瀏覽器 (HTML/JS/Vue or Thymeleaf)]
     end
 
-    subgraph Backend [後端伺服器 (Spring Boot)]
-        Controller[Web Controller / REST API]
+    subgraph Backend [後端伺服器 (Python/FastAPI)]
+        Controller[API Router (FastAPI)]
         Service[Service Layer (Business Logic)]
-        Repository[Repository Layer (JPA)]
+        Repository[Repository Layer (SQLAlchemy)]
     end
 
     subgraph Database [資料儲存]
@@ -91,8 +91,8 @@ graph TD
     Service -->|CRUD 操作| Repository
     Repository -->|SQL Query| MySQL
     MySQL -->|Result Set| Repository
-    Repository -->|Entity| Service
-    Service -->|DTO| Controller
+    Repository -->|Pydantic Model| Service
+    Service -->|Pydantic Model| Controller
     Controller -->|HTTPS Response (JSON)| Browser
 ```
 
@@ -171,8 +171,8 @@ erDiagram
         ```json
         {
           "items": [
-            {"productId": 1, "quantity": 1, "customization": {"sugar": "微糖", "ice": "少冰"}},
-            {"productId": 2, "quantity": 2, "customization": {"sugar": "無糖", "ice": "去冰"}}
+            {"product_id": 1, "quantity": 1, "customization": {"sugar": "微糖", "ice": "少冰"}},
+            {"product_id": 2, "quantity": 2, "customization": {"sugar": "無糖", "ice": "去冰"}}
           ],
           "paymentMethod": "LINE_PAY"
         }
@@ -203,7 +203,7 @@ erDiagram
 sequenceDiagram
     participant User as 顧客
     participant FE as 前端 (Vue/JS)
-    participant API as 後端 (Controller)
+    participant API as 後端 (FastAPI)
     participant SVC as 服務層 (Service)
     participant DB as 資料庫
 
@@ -211,7 +211,7 @@ sequenceDiagram
     FE->>FE: 2. 加入購物車(暫存 LocalStorage)
     User->>FE: 3. 點擊結帳 (LINE Pay)
     FE->>API: 4. POST /api/orders (JSON)
-    API->>SVC: 5. 呼叫 createOrder()
+    API->>SVC: 5. 呼叫 create_order()
     SVC->>DB: 6. 查詢 Product 價格 (驗證金額)
     SVC->>DB: 7. Insert into ORDERS (Status=CREATED)
     SVC->>DB: 8. Loop Insert into ORDER_ITEMS
@@ -224,11 +224,11 @@ sequenceDiagram
 1.  **[使用者]** 在菜單頁面選擇「珍珠奶茶」，設定「微糖、去冰」，加入購物車。
 2.  **[前端]** 將商品與參數暫存於前端 State，計算預估金額。
 3.  **[使用者]** 在購物車頁面確認內容，選擇付款方式後送出。
-4.  **[前端]** 發送 API 請求 `POST /api/orders`，包含商品 ID List 與客製化物件。
-5.  **[後端]** Controller 接收請求，驗證資料格式 (Validation)。
+4.  **[前端]** 發送 API 請求 `POST /api/orders`，包含商品 ID List (`product_id`) 與客製化物件。
+5.  **[後端]** FastAPI 的 API Router 接收請求，Pydantic 模型自動驗證資料格式。
 6.  **[後端]** Service 依據 `product_id` 從 DB 撈取最新價格，重新計算總金額 (防止篡改)。
-7.  **[資料庫]** 在 `orders` 表建立主訂單，狀態設為 `CREATED`。
-8.  **[資料庫]** 逐筆將飲品明細寫入 `order_items` 表。
+7.  **[資料庫]** 透過 SQLAlchemy 在 `orders` 表建立主訂單，狀態設為 `CREATED`。
+8.  **[資料庫]** 透過 SQLAlchemy 逐筆將飲品明細寫入 `order_items` 表。
 9.  **[後端]** 訂單建立成功，回傳訂單編號。
 10. **[前端]** 清空購物車，跳轉至訂單狀態頁顯示「已下單」。
 
@@ -242,7 +242,7 @@ sequenceDiagram
 sequenceDiagram
     participant Staff as 店員
     participant FE as 前端 (Admin Console)
-    participant API as 後端 (Controller)
+    participant API as 後端 (FastAPI)
     participant DB as 資料庫
 
     Staff->>FE: 1. 進入接單頁面
@@ -263,12 +263,12 @@ sequenceDiagram
 #### 詳細步驟描述
 1.  **[使用者]** 店員登入後台，停留在「接單管理」看板。
 2.  **[前端]** 啟動 Polling 機制，每 30 秒呼叫一次 API 查詢新訂單。
-3.  **[後端]** 查詢資料庫中 `status = 'CREATED'` 的訂單。
+3.  **[後端]** FastAPI Router 呼叫服務層，透過 SQLAlchemy 查詢資料庫中 `status = 'CREATED'` 的訂單。
 4.  **[前端]** 若有新資料，更新畫面列表或發出提示音。
 5.  **[使用者]** 店員確認訂單內容（甜度冰塊），按下「開始製作」。
 6.  **[前端]** 呼叫 API `PATCH /api/staff/orders/{id}/status`，將狀態改為 `PREPARING`。
-7.  **[後端]** 驗證店員權限，並執行更新。
-8.  **[資料庫]** 資料表該筆記錄的 `status` 欄位更新。
+7.  **[後端]** FastAPI Router 驗證店員權限，並執行更新。
+8.  **[資料庫]** 透過 SQLAlchemy 更新資料表該筆記錄的 `status` 欄位。
 9.  **[後端]** 回傳成功回應。
 10. **[前端]** 畫面將該訂單移至「製作中」區塊；同時顧客若刷新追蹤頁，也會看到狀態變更。
 

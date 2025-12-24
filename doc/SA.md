@@ -103,10 +103,10 @@ subgraph Client [用戶端]
 Browser[瀏覽器 (HTML5/JS)]
 end
 
-    subgraph Backend [後端伺服器 (Spring Boot)]
-        Controller[Web Controller (接收請求)]
+    subgraph Backend [後端伺服器 (Python/FastAPI)]
+        Controller[API Router (FastAPI)]
         Service[Service Layer (業務邏輯)]
-        Repo[Repository (資料存取)]
+        Repo[Repository (SQLAlchemy)]
     end
 
     subgraph Database [資料儲存]
@@ -119,8 +119,8 @@ end
     Service -->|3. CRUD 操作| Repo
     Repo -->|4. SQL Query| DB
     DB -->|5. ResultSet| Repo
-    Repo -->|6. Entity Object| Service
-    Service -->|7. DTO| Controller
+    Repo -->|6. Pydantic Model| Service
+    Service -->|7. Pydantic Model| Controller
     Controller -->|8. JSON Response| Browser
 ```
 
@@ -129,10 +129,10 @@ end
 ## 5. 技術選用 (Technology Selection)
 依據專案規範 與 REQ：
 
-*   **後端框架**: Java 17+, Spring Boot 3.x (Spring Web, Spring Data JPA)。
+*   **後端框架**: Python 3.9+, FastAPI。
+*   **資料存取**: SQLAlchemy with Pydantic。
 *   **前端介面**: HTML/CSS/JavaScript (搭配 Axios 呼叫 API)。
 *   **資料庫**: MySQL 8.0 (正式區) / H2 (開發測試區)。
-*   **建置工具**: Gradle 或 Maven。
 *   **版本控制**: Git。
 
 ---
